@@ -64,6 +64,29 @@ namespace Library_Management_System.Services
             return null;
         }
 
+        // Borrowing book simulation
+        public async Task<bool> BorrowBookAsync(int bookId)
+        {
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null || book.CopiesAvailable <= 0)
+                return false;
+
+            book.CopiesAvailable--;
+            book.TimesBorrowed++;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> ReturnBookAsync(int bookId)
+        {
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null)
+                return false;
+
+            book.CopiesAvailable++;
+            await _context.SaveChangesAsync();
+            return true;
+        }
 
         // Read Operations
         public async Task<BookModel?> GetBookByIdAsync(int id)

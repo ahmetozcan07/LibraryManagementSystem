@@ -1,5 +1,6 @@
 ﻿using Library_Management_System.Interfaces;
 using Library_Management_System.Models;
+using Library_Management_System.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -111,6 +112,30 @@ namespace Library_Management_System.Controllers
             var deleted = await _writeService.DeleteBookAsync(id);
             if (!deleted) return NotFound();
             return Ok("Book deleted successfully.\n");
+        }
+
+
+        // Book borrowing
+        [Authorize(Roles = "User,Admin")]
+        [HttpPost("{id}/borrow")]
+        public async Task<IActionResult> BorrowBook(int id)
+        {
+            var success = await _writeService.BorrowBookAsync(id);
+            if (!success)
+                return BadRequest("Book is not available or does not exist.");
+
+            return Ok("Book borrowed successfully.");
+        }
+
+        [Authorize(Roles = "User,Admin")]
+        [HttpPost("{id}/return")]
+        public async Task<IActionResult> ReturnBook(int id)
+        {
+            var success = await _writeService.ReturnBookAsync(id);
+            if (!success)
+                return BadRequest("Book does not exist.");
+
+            return Ok("Book returned successfully.");
         }
     }
 } 
