@@ -8,5 +8,6 @@ namespace Library_Management_System.Interfaces
     {
         Task<List<UserModel>> GetAllUsersAsync();
         Task<bool> MakeAdminAsync(string username);
+        Task<bool> DeleteUserAsync(string username);
     }
 }

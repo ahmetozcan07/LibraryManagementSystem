@@ -16,6 +16,10 @@ namespace Library_Management_System.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<BookModel>()
+            .Property(b => b.Id)
+            .ValueGeneratedOnAdd();
+
             modelBuilder.Entity<BookModel>().HasData(
                 new BookModel { Id = 1, Title = "Don Quixote", Author = "Miguel de Cervantes", ISBN = "9780060934347", CopiesAvailable = 4, TimesBorrowed = 6 },
                 new BookModel { Id = 2, Title = "Alice's Adventures in Wonderland", Author = "Lewis Carroll", ISBN = "9781503250212", CopiesAvailable = 3, TimesBorrowed = 5 },

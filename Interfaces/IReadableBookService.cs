@@ -8,7 +8,7 @@ namespace Library_Management_System.Interfaces
 
         Task<BookModel?> GetBookByIdAsync(int id);
 
-        Task<IEnumerable<BookModel>> GetBooksGroupedByAuthorAsync();
+        Task<object> GetBooksGroupedByAuthorAsync();
         Task<IEnumerable<BookModel>> GetTopBorrowedBooksAsync(int top = 3);
 
         Task<BookModel?> FetchBookDetailsFromExternalApiAsync(int id);

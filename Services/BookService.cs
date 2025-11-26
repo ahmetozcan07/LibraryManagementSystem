@@ -20,10 +20,16 @@ namespace Library_Management_System.Services
 
 
         // Write Operations
-        public async Task<BookModel> AddBookAsync(BookModel book)
+        public async Task<BookModel> AddBookAsync(BookCreationDtoModel bookDto)
         {
-            if (_context.Books.Any(p => p.Id == book.Id))
-                throw new Exception($"Product with ID {book.Id} already exists!");
+            var book = new BookModel
+            {
+                Title = bookDto.Title,
+                Author = bookDto.Author,
+                ISBN = bookDto.ISBN,
+                CopiesAvailable = bookDto.CopiesAvailable,
+                TimesBorrowed = 0
+            };
 
             _context.Books.Add(book);
             await _context.SaveChangesAsync();
@@ -71,13 +77,16 @@ namespace Library_Management_System.Services
             return await _context.Books.ToListAsync();
         }
 
-        public async Task<IEnumerable<BookModel>> GetBooksGroupedByAuthorAsync()
+        public async Task<object> GetBooksGroupedByAuthorAsync()
         {
-            var query = _context.Books.AsQueryable();
-
-            query = (IQueryable<BookModel>)query.GroupBy(b => b.Author);
-
-            return await query.ToListAsync();
+            return await _context.Books
+            .GroupBy(b => b.Author)
+            .Select(g => new
+            {
+                Author = g.Key,
+                Books = g.ToList()
+            })
+            .ToListAsync();
         }
 
         public async Task<IEnumerable<BookModel>> GetTopBorrowedBooksAsync(int top = 3)
@@ -91,6 +100,8 @@ namespace Library_Management_System.Services
 
         public async Task<BookModel?> FetchBookDetailsFromExternalApiAsync(int id)
         {
+            await Task.Delay(1000);
+
             var book = await _context.Books.AsNoTracking().FirstOrDefaultAsync(b => b.Id == id);
 
             if (book != null)

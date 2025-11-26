@@ -37,14 +37,25 @@ namespace Library_Management_System.Controllers
             return Ok($"{username} is now an Admin.");
         }
 
-        [Authorize]
-        [HttpGet("Me")]
-        public IActionResult Me()
+        [Authorize(Roles = "Admin")]
+        [HttpDelete("Delete-a-user")]
+        public async Task<IActionResult> DeleteUser(string username)
         {
-            var username = User.Identity?.Name;
-            var role = User.Claims.FirstOrDefault(c => c.Type == "role")?.Value;
+            var currentUsername = User.Identity?.Name;
 
-            return Ok(new { username, role });
+            if (string.Equals(currentUsername, username))
+            {
+                return BadRequest("You cannot delete yourself.");
+            }
+
+            var success = await _userService.DeleteUserAsync(username);
+
+            if (!success)
+            {
+                return BadRequest("User not found.");
+            }
+
+            return Ok($"{username} is removed from the system.");
         }
     }
 }

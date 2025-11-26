@@ -32,5 +32,15 @@ namespace Library_Management_System.Services
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> DeleteUserAsync(string username)
+        {
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.Username == username);
+            if (user == null)
+                return false;
+            _context.Users.Remove(user);
+            await _context.SaveChangesAsync();
+            return true;
+        }
     }
 }

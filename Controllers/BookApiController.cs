@@ -1,6 +1,5 @@
 ﻿using Library_Management_System.Interfaces;
 using Library_Management_System.Models;
-using Library_Management_System.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -77,10 +76,13 @@ namespace Library_Management_System.Controllers
         /// <returns>Adds a new book.</returns>
         [HttpPost]
         [Authorize(Roles = admin)]
-        public async Task<IActionResult> AddAsync(BookModel book)
+        public async Task<IActionResult> AddAsync([FromBody] BookCreationDtoModel bookdto)
         {
-            var created = await _writeService.AddBookAsync(book);
-            return CreatedAtAction(nameof(GetBookByIdAsync), new { id = created.Id }, created);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var created = await _writeService.AddBookAsync(bookdto);
+
+            return Ok(created);
         }
 
         /// <summary>
@@ -88,7 +90,7 @@ namespace Library_Management_System.Controllers
         /// </summary>
         /// <param name="book"></param>
         /// <returns>Update an existing book.</returns>
-        [HttpPut("{id}")]
+        [HttpPut]
         [Authorize(Roles = admin)]
         public async Task<IActionResult> UpdateBookAsync(BookModel book)
         {
@@ -108,7 +110,7 @@ namespace Library_Management_System.Controllers
         {
             var deleted = await _writeService.DeleteBookAsync(id);
             if (!deleted) return NotFound();
-            return Ok("Book deleted successfully.");
+            return Ok("Book deleted successfully.\n");
         }
     }
 } 
