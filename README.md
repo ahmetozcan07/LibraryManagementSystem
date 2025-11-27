@@ -17,31 +17,31 @@ A simple **Library Management System** built with **ASP.NET Core Web API**, **En
 
 ---
 
-### 📦 2. Entity Framework Core Integration
+### 2. Entity Framework Core Integration
 - EF Core with Azure SQL Database support.
 - Tables:
   - `Users`
   - `Books`
 - Seeded 5 example books.
-- Automatic admin creation at startup (`admin / admin123`) in Program.cs with the following code.
+- Automatic admin creation at startup in Program.cs with the following code.
 This code can be deleted later.
 
-using (var scope = app.Services.CreateScope())
-{
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    if (!db.Users.Any())
+---
+    using (var scope = app.Services.CreateScope())
     {
-        db.Users.Add(new JWTandRoleBasedApp.Models.User
-        {
-            Username = "admin",
-            PasswordHash = JWTandRoleBasedApp.Helpers.PasswordHasher.Hash("admin123"),
-            Role = "Admin"
-        });
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        db.SaveChanges();
+        if (!db.Users.Any())
+        {
+            db.Users.Add(new JWTandRoleBasedApp.Models.User
+            {
+                Username = "admin",
+                PasswordHash = JWTandRoleBasedApp.Helpers.PasswordHasher.Hash("admin123"),
+                Role = "Admin"
+            });
+            db.SaveChanges();
+        }
     }
-}
 
 ---
 
@@ -53,15 +53,12 @@ API Endpoints include:
 ---
 
 ### 4. Async Programming
-- Simulated external API call using `async/await` to fetch fake book details.
+- Simulated external API call using `async/await` to fetch book details.
 
 ---
 
 ### 5. API Security + Swagger
 - All endpoints secured using role-based authorization.
-- Full Swagger documentation available at:
-
-/swagger
 
 ---
 
@@ -71,34 +68,3 @@ API Endpoints include:
 - This is only for simulation. Books can be returned even without getting borrowed.
 
 ---
-
-## Database Migrations
-
-To create annd apply a migration:
-
-```sh
-dotnet ef migrations add InitialCreate
-dotnet ef database update
-
-
-
-    Running the Project
-1. Update appsettings.json
-Add your Azure SQL connection string:
-
-json
-
-"ConnectionStrings": {
-  "DefaultConnection": "your-azure-sql-connection-string"
-}
-2. Run the API
-
-```sh
-Copy code
-dotnet run
-
-API starts at localhost
-
-Swagger UI:
-
-go to /swagger

@@ -61,13 +61,20 @@ namespace Library_Management_System.Controllers
             return Ok(result);
         }
 
-        [HttpGet("Fetch-book-external/{id}")]
+        [HttpGet("Fetch-book-external/{isbn}")]
         [Authorize]
-        public async Task<IActionResult> FetchBookFromExternalApi(int id)
+        public async Task<IActionResult> GetBookFromExternalApi(string isbn)
         {
-            var book = await _readService.FetchBookDetailsFromExternalApiAsync(id);
-            if( book == null ) return NotFound();
-            return Ok(book);
+            var url = $"https://openlibrary.org/isbn/{isbn}.json";
+
+            using var http = new HttpClient();
+            var response = await http.GetAsync(url);
+
+            if (!response.IsSuccessStatusCode)
+                return NotFound("Book not found in external API.");
+
+            var json = await response.Content.ReadAsStringAsync();
+            return Ok(json);
         }
 
         /// <summary>
